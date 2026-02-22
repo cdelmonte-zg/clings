@@ -127,6 +127,7 @@ dependencies = [
  "notify",
  "notify-debouncer-mini",
  "serde",
+ "tempfile",
  "toml",
 ]
 

@@ -43,6 +43,8 @@ enum Commands {
     List,
     /// Verify all exercises
     Verify,
+    /// Reset progress (start from scratch)
+    Reset,
 }
 
 fn resolve_base_dir() -> Result<PathBuf> {
@@ -93,14 +95,8 @@ fn main() -> Result<()> {
     match cli.command {
         None => {
             // Default: watch mode
-            if let Some(msg) = &info.welcome_message {
-                println!();
-                for line in msg.lines() {
-                    println!("  {line}");
-                }
-                println!();
-            }
-            watch::run_watch(&mut state, &compiler, &exercises_dir, &build_dir)?;
+            let welcome = info.welcome_message.as_deref();
+            watch::run_watch(&mut state, &compiler, &exercises_dir, &build_dir, welcome)?;
         }
         Some(Commands::Run { name }) => {
             let name = name.unwrap_or_else(|| {
@@ -200,6 +196,12 @@ fn main() -> Result<()> {
                 };
                 println!("    {status} {}", exercise.name());
             }
+            println!();
+        }
+        Some(Commands::Reset) => {
+            state.reset()?;
+            println!();
+            term::print_success("Progress reset. Starting fresh!");
             println!();
         }
         Some(Commands::Verify) => {

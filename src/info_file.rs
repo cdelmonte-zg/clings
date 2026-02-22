@@ -6,7 +6,7 @@ fn default_true() -> bool {
     true
 }
 
-#[derive(Deserialize)]
+#[derive(Debug, Deserialize)]
 pub struct InfoFile {
     pub format_version: u32,
     #[serde(default)]
@@ -20,7 +20,7 @@ pub struct InfoFile {
     pub exercises: Vec<ExerciseInfo>,
 }
 
-#[derive(Deserialize, Clone)]
+#[derive(Debug, Deserialize, Clone)]
 pub struct ExerciseInfo {
     pub name: String,
     pub dir: String,
@@ -55,19 +55,135 @@ impl ExerciseInfo {
 }
 
 impl InfoFile {
-    pub fn parse(path: &Path) -> Result<Self> {
-        let content = std::fs::read_to_string(path)
-            .with_context(|| format!("Failed to read {}", path.display()))?;
+    pub fn parse_str(content: &str) -> Result<Self> {
         let info: InfoFile =
-            toml::from_str(&content).with_context(|| format!("Failed to parse {}", path.display()))?;
-
+            toml::from_str(content).with_context(|| "Failed to parse TOML")?;
         if info.format_version != 1 {
             anyhow::bail!(
                 "Unsupported info.toml format_version: {}",
                 info.format_version
             );
         }
-
         Ok(info)
+    }
+
+    pub fn parse(path: &Path) -> Result<Self> {
+        let content = std::fs::read_to_string(path)
+            .with_context(|| format!("Failed to read {}", path.display()))?;
+        Self::parse_str(&content)
+            .with_context(|| format!("Failed to parse {}", path.display()))
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn minimal_toml() -> &'static str {
+        r#"
+format_version = 1
+[[exercises]]
+name = "ex1"
+dir = "00_intro"
+"#
+    }
+
+    fn full_toml() -> &'static str {
+        r#"
+format_version = 1
+default_compiler = "gcc"
+welcome_message = "Welcome!"
+final_message = "Done!"
+
+[[exercises]]
+name = "ex1"
+dir = "00_intro"
+test = true
+sanitizers = true
+hints = ["hint1", "hint2"]
+
+[[exercises]]
+name = "ex2"
+dir = "01_pointers"
+test = false
+sanitizers = false
+hint = "legacy hint"
+"#
+    }
+
+    #[test]
+    fn parse_minimal_toml() {
+        let info = InfoFile::parse_str(minimal_toml()).unwrap();
+        assert_eq!(info.format_version, 1);
+        assert_eq!(info.exercises.len(), 1);
+        assert_eq!(info.exercises[0].name, "ex1");
+        assert_eq!(info.exercises[0].dir, "00_intro");
+    }
+
+    #[test]
+    fn parse_full_toml() {
+        let info = InfoFile::parse_str(full_toml()).unwrap();
+        assert_eq!(info.exercises.len(), 2);
+        assert_eq!(info.welcome_message.as_deref(), Some("Welcome!"));
+        assert_eq!(info.final_message.as_deref(), Some("Done!"));
+        assert!(info.exercises[0].test);
+        assert!(info.exercises[0].sanitizers);
+        assert!(!info.exercises[1].test);
+        assert!(!info.exercises[1].sanitizers);
+    }
+
+    #[test]
+    fn defaults_test_true_sanitizers_false() {
+        let info = InfoFile::parse_str(minimal_toml()).unwrap();
+        let ex = &info.exercises[0];
+        assert!(ex.test);
+        assert!(!ex.sanitizers);
+    }
+
+    #[test]
+    fn reject_wrong_format_version() {
+        let toml = r#"
+format_version = 99
+[[exercises]]
+name = "ex1"
+dir = "00_intro"
+"#;
+        let result = InfoFile::parse_str(toml);
+        assert!(result.is_err());
+        assert!(result.unwrap_err().to_string().contains("format_version"));
+    }
+
+    #[test]
+    fn get_hints_with_hints_array() {
+        let info = InfoFile::parse_str(full_toml()).unwrap();
+        let hints = info.exercises[0].get_hints();
+        assert_eq!(hints, vec!["hint1", "hint2"]);
+    }
+
+    #[test]
+    fn get_hints_with_legacy_hint() {
+        let info = InfoFile::parse_str(full_toml()).unwrap();
+        let hints = info.exercises[1].get_hints();
+        assert_eq!(hints, vec!["legacy hint"]);
+    }
+
+    #[test]
+    fn get_hints_no_hints() {
+        let info = InfoFile::parse_str(minimal_toml()).unwrap();
+        let hints = info.exercises[0].get_hints();
+        assert!(hints.is_empty());
+    }
+
+    #[test]
+    fn get_hints_empty_hint_string() {
+        let toml = r#"
+format_version = 1
+[[exercises]]
+name = "ex1"
+dir = "00_intro"
+hint = ""
+"#;
+        let info = InfoFile::parse_str(toml).unwrap();
+        assert!(info.exercises[0].get_hints().is_empty());
     }
 }

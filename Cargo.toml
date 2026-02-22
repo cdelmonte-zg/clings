@@ -13,3 +13,6 @@ notify-debouncer-mini = "0.5"
 crossterm = "0.28"
 anyhow = "1"
 console = "0.15"
+
+[dev-dependencies]
+tempfile = "3"

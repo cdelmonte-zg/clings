@@ -62,7 +62,7 @@ impl Compiler {
     }
 
     fn base_args(&self) -> Vec<String> {
-        vec![
+        let mut args = vec![
             self.include_flag(),
             "-Wall".into(),
             "-Wextra".into(),
@@ -70,7 +70,22 @@ impl Compiler {
             "-pedantic".into(),
             "-std=c11".into(),
             "-g".into(),
-        ]
+        ];
+        if self.supports_flag("-fno-diagnostics-show-fix-it-hints") {
+            args.push("-fno-diagnostics-show-fix-it-hints".into());
+        }
+        args
+    }
+
+    fn supports_flag(&self, flag: &str) -> bool {
+        Command::new(self.kind.command_name())
+            .args([flag, "-x", "c", "-E", "-"])
+            .stdin(std::process::Stdio::null())
+            .stdout(std::process::Stdio::null())
+            .stderr(std::process::Stdio::null())
+            .status()
+            .map(|s| s.success())
+            .unwrap_or(false)
     }
 
     pub fn compile(&self, source: &Path, output: &Path) -> Result<CompileResult> {
@@ -125,5 +140,26 @@ impl Compiler {
             success: output.status.success(),
             output: combined,
         })
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn command_name_gcc() {
+        assert_eq!(CompilerKind::Gcc.command_name(), "gcc");
+    }
+
+    #[test]
+    fn command_name_clang() {
+        assert_eq!(CompilerKind::Clang.command_name(), "clang");
+    }
+
+    #[test]
+    fn display_trait() {
+        assert_eq!(format!("{}", CompilerKind::Gcc), "gcc");
+        assert_eq!(format!("{}", CompilerKind::Clang), "clang");
     }
 }

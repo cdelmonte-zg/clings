@@ -20,7 +20,7 @@ welcome_message = """
   - Edit the .c file in your editor
   - clings will automatically recompile and verify your changes
 
-  Commands: [n]ext [h]int [l]ist [r]e-run [q]uit
+  Commands: [n]ext [p]rev [h]int [l]ist [r]e-run [q]uit
 """
 
 final_message = """
@@ -36,8 +36,8 @@ dir = "00_intro"
 test = false
 sanitizers = false
 hint = """
-This is your first exercise! Just read the code and fix the TODO.
-The program should print a welcome message and exit with code 0.
+In C, main() should return 0 to indicate success.
+What value is it returning now?
 """
 
 # ── 01: Pointers ─────────────────────────────────────────

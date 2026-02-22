@@ -103,6 +103,15 @@ impl AppState {
         self.done.insert(name.to_string());
     }
 
+    pub fn prev(&mut self) -> bool {
+        if self.current_index > 0 {
+            self.current_index -= 1;
+            true
+        } else {
+            false
+        }
+    }
+
     pub fn next_pending(&mut self) -> bool {
         let start = self.current_index;
         let len = self.exercises.len();
@@ -129,4 +138,185 @@ impl AppState {
         self.exercises.iter().position(|e| e.name() == name)
     }
 
+    pub fn reset(&self) -> Result<()> {
+        if self.state_path.exists() {
+            std::fs::remove_file(&self.state_path)
+                .with_context(|| "Failed to remove state file")?;
+        }
+        Ok(())
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::info_file::ExerciseInfo;
+
+    fn make_info(name: &str) -> ExerciseInfo {
+        ExerciseInfo {
+            name: name.to_string(),
+            dir: "test".to_string(),
+            test: false,
+            sanitizers: false,
+            hint: None,
+            hints: None,
+        }
+    }
+
+    fn make_exercise(name: &str) -> Exercise {
+        let info = make_info(name);
+        Exercise {
+            path: PathBuf::from(format!("/tmp/{name}.c")),
+            solution_path: PathBuf::from(format!("/tmp/{name}_sol.c")),
+            info,
+        }
+    }
+
+    fn make_state(names: &[&str], base_dir: &Path) -> AppState {
+        let exercises: Vec<Exercise> = names.iter().map(|n| make_exercise(n)).collect();
+        AppState {
+            state_path: base_dir.join(STATE_FILE),
+            exercises,
+            done: HashSet::new(),
+            current_index: 0,
+        }
+    }
+
+    // --- Navigation ---
+
+    #[test]
+    fn prev_at_zero_returns_false() {
+        let tmp = tempfile::tempdir().unwrap();
+        let mut state = make_state(&["a", "b", "c"], tmp.path());
+        assert!(!state.prev());
+        assert_eq!(state.current_index, 0);
+    }
+
+    #[test]
+    fn prev_moves_back() {
+        let tmp = tempfile::tempdir().unwrap();
+        let mut state = make_state(&["a", "b", "c", "d"], tmp.path());
+        state.current_index = 3;
+        assert!(state.prev());
+        assert_eq!(state.current_index, 2);
+    }
+
+    #[test]
+    fn next_pending_skips_done() {
+        let tmp = tempfile::tempdir().unwrap();
+        let mut state = make_state(&["a", "b", "c"], tmp.path());
+        state.mark_done("b");
+        // at index 0, next should skip b (done) and go to c
+        assert!(state.next_pending());
+        assert_eq!(state.current_index, 2);
+    }
+
+    #[test]
+    fn next_pending_wraps_around() {
+        let tmp = tempfile::tempdir().unwrap();
+        let mut state = make_state(&["a", "b", "c"], tmp.path());
+        state.current_index = 2;
+        state.mark_done("a");
+        state.mark_done("c");
+        // from index 2, only b is pending → wraps to index 1
+        assert!(state.next_pending());
+        assert_eq!(state.current_index, 1);
+    }
+
+    #[test]
+    fn next_pending_all_done_returns_false() {
+        let tmp = tempfile::tempdir().unwrap();
+        let mut state = make_state(&["a", "b"], tmp.path());
+        state.mark_done("a");
+        state.mark_done("b");
+        assert!(!state.next_pending());
+    }
+
+    // --- State tracking ---
+
+    #[test]
+    fn mark_done_and_is_done() {
+        let tmp = tempfile::tempdir().unwrap();
+        let mut state = make_state(&["a", "b"], tmp.path());
+        assert!(!state.is_done("a"));
+        state.mark_done("a");
+        assert!(state.is_done("a"));
+        assert!(!state.is_done("b"));
+    }
+
+    #[test]
+    fn all_done_false_then_true() {
+        let tmp = tempfile::tempdir().unwrap();
+        let mut state = make_state(&["a", "b"], tmp.path());
+        assert!(!state.all_done());
+        state.mark_done("a");
+        assert!(!state.all_done());
+        state.mark_done("b");
+        assert!(state.all_done());
+    }
+
+    #[test]
+    fn progress_counts() {
+        let tmp = tempfile::tempdir().unwrap();
+        let mut state = make_state(&["a", "b", "c"], tmp.path());
+        assert_eq!(state.progress(), (0, 3));
+        state.mark_done("a");
+        assert_eq!(state.progress(), (1, 3));
+        state.mark_done("c");
+        assert_eq!(state.progress(), (2, 3));
+    }
+
+    #[test]
+    fn find_exercise_found_and_not_found() {
+        let tmp = tempfile::tempdir().unwrap();
+        let state = make_state(&["alpha", "beta"], tmp.path());
+        assert_eq!(state.find_exercise("beta"), Some(1));
+        assert_eq!(state.find_exercise("gamma"), None);
+    }
+
+    #[test]
+    fn current_exercise_valid() {
+        let tmp = tempfile::tempdir().unwrap();
+        let state = make_state(&["a", "b"], tmp.path());
+        assert_eq!(state.current_exercise().unwrap().name(), "a");
+    }
+
+    // --- Persistence ---
+
+    #[test]
+    fn save_and_reload_preserves_state() {
+        let tmp = tempfile::tempdir().unwrap();
+        let mut state = make_state(&["a", "b", "c"], tmp.path());
+        state.current_index = 1;
+        state.mark_done("a");
+        state.save().unwrap();
+
+        let state2 = AppState::new(
+            vec![make_exercise("a"), make_exercise("b"), make_exercise("c")],
+            tmp.path(),
+        )
+        .unwrap();
+        assert_eq!(state2.current_index, 1);
+        assert!(state2.is_done("a"));
+        assert!(!state2.is_done("b"));
+    }
+
+    #[test]
+    fn reset_removes_state_file() {
+        let tmp = tempfile::tempdir().unwrap();
+        let mut state = make_state(&["a"], tmp.path());
+        state.mark_done("a");
+        state.save().unwrap();
+        assert!(tmp.path().join(STATE_FILE).exists());
+
+        state.reset().unwrap();
+        assert!(!tmp.path().join(STATE_FILE).exists());
+    }
+
+    #[test]
+    fn reset_no_file_is_ok() {
+        let tmp = tempfile::tempdir().unwrap();
+        let state = make_state(&["a"], tmp.path());
+        assert!(state.reset().is_ok());
+    }
 }

@@ -32,6 +32,9 @@ jobs:
       - name: cargo clippy
         run: cargo clippy -- -D warnings
 
+      - name: cargo test
+        run: cargo test
+
       - name: Verify solutions (gcc)
         shell: bash
         run: |

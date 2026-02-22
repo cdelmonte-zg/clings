@@ -7,7 +7,7 @@ pub fn print_success(msg: &str) {
     let _ = crossterm::execute!(stdout, SetForegroundColor(Color::Green), SetAttribute(Attribute::Bold));
     print!("  ✓ ");
     let _ = crossterm::execute!(stdout, SetAttribute(Attribute::Reset));
-    println!("{msg}");
+    println!("{msg}\r");
 }
 
 pub fn print_error(msg: &str) {
@@ -15,7 +15,7 @@ pub fn print_error(msg: &str) {
     let _ = crossterm::execute!(stdout, SetForegroundColor(Color::Red), SetAttribute(Attribute::Bold));
     print!("  ✗ ");
     let _ = crossterm::execute!(stdout, SetAttribute(Attribute::Reset));
-    println!("{msg}");
+    println!("{msg}\r");
 }
 
 pub fn print_warning(msg: &str) {
@@ -23,7 +23,7 @@ pub fn print_warning(msg: &str) {
     let _ = crossterm::execute!(stdout, SetForegroundColor(Color::Yellow), SetAttribute(Attribute::Bold));
     print!("  ⚠ ");
     let _ = crossterm::execute!(stdout, SetAttribute(Attribute::Reset));
-    println!("{msg}");
+    println!("{msg}\r");
 }
 
 pub fn print_info(msg: &str) {
@@ -31,13 +31,13 @@ pub fn print_info(msg: &str) {
     let _ = crossterm::execute!(stdout, SetForegroundColor(Color::Cyan));
     print!("  ℹ ");
     let _ = crossterm::execute!(stdout, SetAttribute(Attribute::Reset));
-    println!("{msg}");
+    println!("{msg}\r");
 }
 
 pub fn print_header(msg: &str) {
     let mut stdout = io::stdout();
     let _ = crossterm::execute!(stdout, SetForegroundColor(Color::Magenta), SetAttribute(Attribute::Bold));
-    println!("\n  {msg}");
+    println!("\r\n  {msg}\r");
     let _ = crossterm::execute!(stdout, SetAttribute(Attribute::Reset));
 }
 
@@ -52,13 +52,13 @@ pub fn print_progress(done: usize, total: usize) {
     let empty = bar_width - filled;
 
     let _ = crossterm::execute!(stdout, SetForegroundColor(Color::Cyan));
-    print!("  Progress: [");
+    print!("  Completed: [");
     let _ = crossterm::execute!(stdout, SetForegroundColor(Color::Green));
     print!("{}", "█".repeat(filled));
     let _ = crossterm::execute!(stdout, SetForegroundColor(Color::DarkGrey));
     print!("{}", "░".repeat(empty));
     let _ = crossterm::execute!(stdout, SetForegroundColor(Color::Cyan));
-    println!("] {done}/{total}");
+    println!("] {done}/{total}\r");
     let _ = crossterm::execute!(stdout, SetAttribute(Attribute::Reset));
 }
 
@@ -66,10 +66,10 @@ pub fn print_stage_output(stage: &str, output: &str) {
     if !output.is_empty() {
         let mut stdout = io::stdout();
         let _ = crossterm::execute!(stdout, SetForegroundColor(Color::DarkGrey));
-        println!("\n  ── {stage} output ──");
+        println!("\r\n  ── {stage} output ──\r");
         let _ = crossterm::execute!(stdout, SetAttribute(Attribute::Reset));
         for line in output.lines() {
-            println!("  {line}");
+            println!("  {line}\r");
         }
     }
 }
