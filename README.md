@@ -30,16 +30,22 @@ editor and clings will automatically recompile and verify your changes.
 
 Commands: `[n]ext` `[h]int` `[l]ist` `[r]e-run` `[q]uit`
 
-## Exercises
+## Exercises (32 total)
 
-| Topic                | What you will learn                              |
-|----------------------|--------------------------------------------------|
-| 00 Intro             | Getting started, basic program structure          |
-| 01 Pointers          | Decay, arithmetic, pointer-size pitfalls          |
-| 02 Memory            | malloc/free, leaks, use-after-free, double-free   |
-| 03 Undefined Behavior| Signed overflow, strict aliasing, sequence points |
-| 04 Preprocessor      | Stringify, token pasting, macro pitfalls          |
-| 05 UB Lab            | Hands-on UB experiments with sanitizer feedback   |
+| Topic                  | Exercises | What you will learn                              |
+|------------------------|-----------|--------------------------------------------------|
+| 00 Intro               | 1         | Getting started, basic program structure          |
+| 01 Pointers            | 2         | Decay, arithmetic, pointer-size pitfalls          |
+| 02 Memory              | 3         | malloc/free, realloc, leaks, double-free          |
+| 03 Undefined Behavior  | 1         | Signed overflow detection                         |
+| 04 Preprocessor        | 1         | Stringify, token pasting, macro pitfalls          |
+| 05 UB Lab              | 6         | Hands-on UB experiments with sanitizer feedback   |
+| 06 Strings             | 3         | Safe concatenation, tokenizing, parsing           |
+| 07 Structs             | 3         | Layout/padding, opaque types, linked lists        |
+| 08 Function Pointers   | 3         | Callbacks, generic sort, dispatch tables          |
+| 09 Const Correctness   | 3         | const parameters, pointer-to-const, immutable API |
+| 10 Error Handling       | 3         | Return codes, error propagation, error context    |
+| 11 Bitwise             | 3         | Bit counting, packing/unpacking, bit tricks       |
 
 ## Features
 

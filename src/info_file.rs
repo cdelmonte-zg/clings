@@ -28,8 +28,30 @@ pub struct ExerciseInfo {
     pub test: bool,
     #[serde(default)]
     pub sanitizers: bool,
+    /// Single hint (legacy format, still supported)
     #[serde(default)]
-    pub hint: String,
+    pub hint: Option<String>,
+    /// Progressive hints array (new format)
+    #[serde(default)]
+    pub hints: Option<Vec<String>>,
+}
+
+impl ExerciseInfo {
+    /// Get all hints as a slice, merging both formats.
+    /// If `hints` array is set, use that. Otherwise wrap `hint` string.
+    pub fn get_hints(&self) -> Vec<&str> {
+        if let Some(hints) = &self.hints {
+            hints.iter().map(|s| s.as_str()).collect()
+        } else if let Some(hint) = &self.hint {
+            if hint.is_empty() {
+                vec![]
+            } else {
+                vec![hint.as_str()]
+            }
+        } else {
+            vec![]
+        }
+    }
 }
 
 impl InfoFile {

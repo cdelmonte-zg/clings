@@ -31,10 +31,13 @@ enum Commands {
         /// Exercise name
         name: Option<String>,
     },
-    /// Show hint for an exercise
+    /// Show hint for an exercise (use --level N to reveal up to hint N)
     Hint {
         /// Exercise name (defaults to current)
         name: Option<String>,
+        /// Hint level to show (1 = first hint, 2 = first two, etc.)
+        #[arg(short, long, default_value = "1")]
+        level: usize,
     },
     /// List all exercises and their status
     List,
@@ -132,7 +135,7 @@ fn main() -> Result<()> {
                 std::process::exit(1);
             }
         }
-        Some(Commands::Hint { name }) => {
+        Some(Commands::Hint { name, level }) => {
             let name = name.unwrap_or_else(|| {
                 state
                     .current_exercise()
@@ -145,15 +148,31 @@ fn main() -> Result<()> {
                 .context(format!("Exercise '{name}' not found"))?;
 
             let exercise = &state.exercises[idx];
+            let hints = exercise.hints();
+
             println!();
-            term::print_header(&format!("Hint for: {}", exercise.name()));
-            println!();
-            let hint = exercise.hint();
-            if hint.is_empty() {
-                term::print_warning("No hint available for this exercise.");
+            if hints.is_empty() {
+                term::print_warning(&format!("No hints available for {}.", exercise.name()));
             } else {
-                for line in hint.lines() {
-                    println!("  {line}");
+                let show_up_to = level.min(hints.len());
+                for (i, hint) in hints.iter().take(show_up_to).enumerate() {
+                    term::print_header(&format!(
+                        "Hint {} of {} for {}:",
+                        i + 1,
+                        hints.len(),
+                        exercise.name()
+                    ));
+                    println!();
+                    for line in hint.lines() {
+                        println!("  {line}");
+                    }
+                    println!();
+                }
+                if show_up_to < hints.len() {
+                    term::print_info(&format!(
+                        "Use --level {} to see the next hint.",
+                        show_up_to + 1
+                    ));
                 }
             }
             println!();

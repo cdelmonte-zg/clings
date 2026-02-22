@@ -22,6 +22,9 @@ pub fn run_watch(
 ) -> Result<()> {
     let (tx, rx) = mpsc::channel();
 
+    // Track which hint level we're at for the current exercise
+    let mut hint_level: usize = 0;
+
     // File watcher
     let tx_fs = tx.clone();
     let mut debouncer = new_debouncer(
@@ -90,22 +93,44 @@ pub fn run_watch(
                 }
                 state.next_pending();
                 state.save()?;
+                hint_level = 0; // Reset hints for new exercise
                 term::clear_screen();
                 print_watch_header(state, compiler);
                 run_current_exercise(state, compiler, build_dir);
                 print_watch_commands();
             }
             Ok(WatchEvent::Key(KeyCode::Char('h'))) => {
-                // Show hint
+                // Show progressive hint
                 if let Some(exercise) = state.current_exercise() {
-                    let hint = exercise.hint().to_string();
+                    let hints = exercise.hints();
                     term::clear_screen();
                     print_watch_header(state, compiler);
                     println!("\r");
-                    term::print_header("Hint:");
-                    println!("\r");
-                    for line in hint.lines() {
-                        println!("  {line}\r");
+
+                    if hints.is_empty() {
+                        term::print_warning("No hints available for this exercise.");
+                    } else {
+                        let show_up_to = (hint_level + 1).min(hints.len());
+                        for (i, hint) in hints.iter().take(show_up_to).enumerate() {
+                            term::print_header(&format!("Hint {} of {}:", i + 1, hints.len()));
+                            println!("\r");
+                            for line in hint.lines() {
+                                println!("  {line}\r");
+                            }
+                            println!("\r");
+                        }
+
+                        if show_up_to < hints.len() {
+                            term::print_info(&format!(
+                                "Press 'h' again for the next hint ({} more).",
+                                hints.len() - show_up_to
+                            ));
+                        } else {
+                            term::print_info("No more hints. You've seen them all!");
+                        }
+
+                        // Advance hint level for next press
+                        hint_level = show_up_to;
                     }
                     println!("\r");
                     print_watch_commands();
@@ -153,7 +178,7 @@ pub fn run_watch(
 fn print_watch_header(state: &AppState, compiler: &Compiler) {
     let (done, total) = state.progress();
     println!("\r");
-    term::print_header(&format!("clings 🔧 [{}]", compiler.kind()));
+    term::print_header(&format!("clings [{}]", compiler.kind()));
     term::print_progress(done, total);
     println!("\r");
 }

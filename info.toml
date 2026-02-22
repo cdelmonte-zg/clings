@@ -9,7 +9,7 @@ welcome_message = """
   \\___|_|_|_| |_|\\__, |___/
                   |___/
 
-  Welcome to clings! 🔧
+  Welcome to clings!
 
   This project contains small exercises to help you learn
   advanced C concepts by fixing broken code and implementing
@@ -24,7 +24,7 @@ welcome_message = """
 """
 
 final_message = """
-  Congratulations! You've completed all exercises! 🎉
+  Congratulations! You've completed all exercises!
   You now have a deeper understanding of advanced C concepts.
 """
 
@@ -47,22 +47,39 @@ name = "pointers1"
 dir = "01_pointers"
 test = true
 sanitizers = true
-hint = """
+hints = [
+  """
 When you pass an array to a function in C, it "decays" to a pointer.
-This means sizeof() inside the function gives you the pointer size,
-not the array size. You need to pass the size as a separate parameter.
-"""
+sizeof() on a pointer gives you the pointer size, not the array size.
+""",
+  """
+You need to pass the array length as a separate parameter.
+Change the function signature to accept an int len parameter.
+""",
+  """
+In the caller: sizeof(arr) / sizeof(arr[0]) gives you the array length.
+But only works where the array was declared, not inside the function!
+""",
+]
 
 [[exercises]]
 name = "pointers2"
 dir = "01_pointers"
 test = true
 sanitizers = true
-hint = """
-Pointer arithmetic moves by the size of the pointed-to type.
-If `int *p` points to an array, then `p + 1` points to the next int,
-not the next byte. Think about what `*(p + i)` is equivalent to.
-"""
+hints = [
+  """
+There are TWO bugs in this code. Start with swap().
+What happens if you do *a = *b before saving the old *a?
+""",
+  """
+swap() needs a temporary variable: int tmp = *a; *a = *b; *b = tmp;
+""",
+  """
+In reverse_array: arr + len points ONE PAST the end.
+The last element is at arr + len - 1.
+""",
+]
 
 # ── 02: Memory ───────────────────────────────────────────
 
@@ -71,15 +88,64 @@ name = "memory1"
 dir = "02_memory"
 test = true
 sanitizers = true
-hint = """
+hints = [
+  """
 Every malloc() must have a matching free().
-But be careful about the ORDER of operations:
-- Don't use memory after freeing it (use-after-free)
-- Don't free the same pointer twice (double-free)
-- Don't forget to free at all (memory leak)
+But be careful about the ORDER: what should you free first
+when you have nested allocations?
+""",
+  """
+Each string was allocated by my_strdup(). You need to free
+each individual string before freeing the items array.
+""",
+  """
+In stringlist_free(), add a loop:
+  for (int i = 0; i < list->count; i++) free(list->items[i]);
+BEFORE free(list->items) and free(list).
+""",
+]
 
-Think about: what should you free first when you have nested allocations?
-"""
+[[exercises]]
+name = "memory2"
+dir = "02_memory"
+test = true
+sanitizers = true
+hints = [
+  """
+Look at dynarray_create(). Are all fields of the struct initialized?
+What happens if count and capacity start with garbage values?
+""",
+  """
+Initialize da->count = 0 and da->capacity = initial_cap after malloc.
+""",
+  """
+In dynarray_push(), what happens if realloc() returns NULL?
+  da->items = realloc(da->items, ...)
+If realloc fails, you've lost the original pointer! Use a temp variable:
+  int *tmp = realloc(da->items, ...);
+  if (tmp) da->items = tmp;
+""",
+]
+
+[[exercises]]
+name = "memory3"
+dir = "02_memory"
+test = true
+sanitizers = true
+hints = [
+  """
+matrix_destroy() frees the data pointer array, but what about
+the individual row arrays? Each row was allocated separately.
+""",
+  """
+Add a loop to free each row: for (int i = 0; i < m->rows; i++) free(m->data[i]);
+Do this BEFORE freeing m->data.
+""",
+  """
+After freeing, set m->data = NULL and m->rows = m->cols = 0.
+This prevents use-after-free if destroy is called twice.
+""",
+]
 
 # ── 03: Undefined Behavior ───────────────────────────────
 
@@ -88,14 +154,23 @@ name = "ub1"
 dir = "03_undefined_behavior"
 test = true
 sanitizers = false
-hint = """
-Signed integer overflow is undefined behavior in C!
-The compiler is free to assume it never happens.
-This means `if (x + 1 > x)` can be optimized away.
-
-To safely check for overflow, you need to check BEFORE the operation.
-Compare against INT_MAX or INT_MIN instead.
-"""
+hints = [
+  """
+Signed integer overflow is undefined behavior in C.
+The compiler can assume it NEVER happens.
+""",
+  """
+You can't check for overflow AFTER it happens:
+  *result = a + b;
+  if (*result < 0) ...  // UB already occurred!
+Check BEFORE the addition instead.
+""",
+  """
+For positive overflow: if (b > 0 && a > INT_MAX - b) return -1;
+For negative overflow: if (b < 0 && a < INT_MIN - b) return -1;
+Only compute *result = a + b after both checks pass.
+""",
+]
 
 # ── 04: Preprocessor ─────────────────────────────────────
 
@@ -104,16 +179,22 @@ name = "preprocessor1"
 dir = "04_preprocessor"
 test = true
 sanitizers = false
-hint = """
-The # operator in a macro "stringifies" its argument, turning it into
-a string literal. For example:
+hints = [
+  """
+The # operator in a macro "stringifies" its argument:
   #define STR(x) #x
   STR(hello)  // becomes "hello"
-
+""",
+  """
 The ## operator concatenates two tokens:
   #define CONCAT(a, b) a##b
   CONCAT(foo, bar)  // becomes foobar
-"""
+""",
+  """
+For DEBUG_VAR, use STRINGIFY to get the variable name as a string:
+  #define DEBUG_VAR(var) printf("%s = %d\\n", STRINGIFY(var), var)
+""",
+]
 
 # ── 05: UB Lab ──────────────────────────────────────────
 #
@@ -126,76 +207,492 @@ name = "ub_lab1"
 dir = "05_ub_lab"
 test = true
 sanitizers = true
-hint = """
-Left-shifting a 1 into the sign bit of a signed int is UB in C11.
-`1 << 31` is undefined when int is 32 bits.
-
-The fix is simple: use an unsigned literal.
-`1u << 31` is well-defined because unsigned overflow wraps.
-"""
+hints = [
+  """
+Look at the bit manipulation functions. What type is the literal 1?
+""",
+  """
+1 is a signed int. Left-shifting into the sign bit (bit 31 on 32-bit)
+is undefined behavior in C11.
+""",
+  """
+Use 1u (unsigned) instead of 1:
+  1u << n  // well-defined even for n == 31
+""",
+]
 
 [[exercises]]
 name = "ub_lab2"
 dir = "05_ub_lab"
 test = true
 sanitizers = true
-hint = """
-Casting between unrelated pointer types violates the strict aliasing
-rule (C11 6.5p7). The compiler assumes pointers of different types
-don't alias, and may reorder or eliminate loads/stores.
-
-Use memcpy() to safely reinterpret bytes between types.
-This is the standard-blessed way to do type punning in C.
-"""
+hints = [
+  """
+How are the raw bits of the float being accessed?
+Look at the pointer casts.
+""",
+  """
+Casting float* to uint32_t* and dereferencing violates the
+strict aliasing rule (C11 6.5p7). The compiler may miscompile this.
+""",
+  """
+Use memcpy() instead of pointer casts:
+  uint32_t bits;
+  memcpy(&bits, &f, sizeof(bits));
+This is the standard way to do type punning.
+""",
+]
 
 [[exercises]]
 name = "ub_lab3"
 dir = "05_ub_lab"
 test = true
 sanitizers = true
-hint = """
-After realloc(), the old pointer is invalidated — even if realloc
-returns the same address, you can't rely on that.
-
-Any pointer into the old block is now dangling.
-Save the INDEX, not the pointer, and recalculate after realloc.
-"""
+hints = [
+  """
+What happens to pointers into a block after realloc()?
+""",
+  """
+realloc() may move the block to a new address.
+Any pointer into the OLD block becomes dangling.
+""",
+  """
+Save the INDEX (offset) instead of the pointer.
+After realloc, recalculate: ptr = &arr[saved_index];
+""",
+]
 
 [[exercises]]
 name = "ub_lab4"
 dir = "05_ub_lab"
 test = true
 sanitizers = true
-hint = """
-Signed integer overflow during multiplication is UB.
-For factorial(13), the result exceeds INT_MAX.
-
-Check BEFORE multiplying: if (result > INT_MAX / i) then overflow.
-Or use a wider type (long long) if the range is sufficient.
-"""
+hints = [
+  """
+What happens when factorial() computes 13! using int?
+""",
+  """
+Signed integer overflow in multiplication is UB.
+13! = 6227020800, which exceeds INT_MAX (2147483647).
+""",
+  """
+Check BEFORE multiplying: if (result > INT_MAX / i) return -1;
+This detects overflow without triggering it.
+""",
+]
 
 [[exercises]]
 name = "ub_lab5"
 dir = "05_ub_lab"
 test = true
 sanitizers = true
-hint = """
+hints = [
+  """
+How is the struct being allocated? Are ALL fields initialized?
+""",
+  """
 malloc() returns uninitialized memory. Reading an uninitialized
-field is undefined behavior — even if it "happens to be zero."
-
-Use calloc() to zero-initialize, or explicitly set every field
-after malloc(). memset(ptr, 0, size) also works.
-"""
+field is undefined behavior, even if it "happens to be zero."
+""",
+  """
+Use memset(s, 0, sizeof(*s)) after malloc, or use calloc(1, sizeof(*s)).
+Or explicitly initialize every field after allocation.
+""",
+]
 
 [[exercises]]
 name = "ub_lab6"
 dir = "05_ub_lab"
 test = true
 sanitizers = true
-hint = """
-Off-by-one errors in array indexing cause out-of-bounds access.
-Reading past the end of an array is UB, even if it "works."
+hints = [
+  """
+Look carefully at the loop bounds in find_last_index().
+""",
+  """
+i <= size reads one past the end. Use i < size.
+""",
+  """
+Also check my_strdup(): strlen(src) doesn't include the null terminator.
+Allocate strlen(src) + 1 bytes.
+""",
+]
 
-Check your loop bounds: should it be `< size` or `<= size`?
-And when allocating strings, don't forget space for the null terminator.
-"""
+# ── 06: Strings ─────────────────────────────────────────
+
+[[exercises]]
+name = "strings1"
+dir = "06_strings"
+test = true
+sanitizers = true
+hints = [
+  """
+strcat() has no way to limit how many bytes it writes.
+If src is longer than the remaining space in dst, it writes
+past the end of the buffer — undefined behavior!
+""",
+  """
+Compute the remaining space: remaining = dst_size - strlen(dst) - 1
+(the -1 reserves room for the null terminator).
+""",
+  """
+If src fits: memcpy(dst + dst_len, src, src_len + 1) and return 0.
+If not: memcpy only 'remaining' bytes, null-terminate, return -1.
+Handle the edge case where the buffer is already full.
+""",
+]
+
+[[exercises]]
+name = "strings2"
+dir = "06_strings"
+test = true
+sanitizers = true
+hints = [
+  """
+The function skips leading delimiters before scanning for the token.
+This means consecutive delimiters ("a,,b") lose the empty token between them.
+""",
+  """
+Remove the while loop that skips delimiters at the start.
+The token should begin immediately at *cursor.
+""",
+  """
+Use NULL (not empty string) to signal "no more tokens":
+  if (*end == delim) *cursor = end + 1;
+  else *cursor = NULL;
+Then check *cursor == NULL at the top to return 0.
+""",
+]
+
+[[exercises]]
+name = "strings3"
+dir = "06_strings"
+test = true
+sanitizers = true
+hints = [
+  """
+There are TWO bugs. The first: the sign character ('-' or '+')
+is parsed but never actually applied to the result.
+""",
+  """
+Track the sign: int sign = 1; if minus, set sign = -1.
+At the end: *result = (int)(value * sign).
+""",
+  """
+The second bug: accumulating in int can overflow silently (UB).
+Use long for accumulation and check against INT_MAX/INT_MIN
+after each digit: if (value > (long)INT_MAX) return -2;
+""",
+]
+
+# ── 07: Structs ─────────────────────────────────────────
+
+[[exercises]]
+name = "structs1"
+dir = "07_structs"
+test = true
+sanitizers = false
+hints = [
+  """
+The compiler adds padding between struct fields to satisfy alignment.
+An int (4 bytes) must be aligned to a 4-byte boundary.
+""",
+  """
+Reorder the fields from largest to smallest to minimize padding:
+  double (8) → int (4) → short (2) → char (1)
+""",
+  """
+The optimized struct should be 16 bytes instead of 24.
+Use sizeof() to verify your reordering worked.
+""",
+]
+
+[[exercises]]
+name = "structs2"
+dir = "07_structs"
+test = true
+sanitizers = true
+hints = [
+  """
+stack_pop() must check if the stack is empty before decrementing count.
+Popping from an empty stack is undefined behavior (negative index).
+""",
+  """
+Return an error value (like -1 or 0) when the stack is empty.
+The test checks that stack_pop on an empty stack returns a sentinel.
+""",
+  """
+In stack_push(), when the array is full, double the capacity with realloc.
+Use a temporary pointer to avoid losing data if realloc fails.
+""",
+]
+
+[[exercises]]
+name = "structs3"
+dir = "07_structs"
+test = true
+sanitizers = true
+hints = [
+  """
+list_free() must free each node, but you can't access node->next
+after freeing the node! Save the next pointer first.
+""",
+  """
+Use a loop:
+  struct node *cur = *head;
+  while (cur) { struct node *next = cur->next; free(cur); cur = next; }
+  *head = NULL;
+""",
+  """
+list_push_front() must set new_node->next to the current head,
+then update *head to point to new_node.
+""",
+]
+
+# ── 08: Function Pointers ───────────────────────────────
+
+[[exercises]]
+name = "function_pointers1"
+dir = "08_function_pointers"
+test = true
+sanitizers = false
+hints = [
+  """
+array_map() calls fn(arr[i]) but never stores the result.
+The function pointer returns an int — what should you do with it?
+""",
+  """
+Store the result back: arr[i] = fn(arr[i]);
+The function transforms each element IN PLACE.
+""",
+]
+
+[[exercises]]
+name = "function_pointers2"
+dir = "08_function_pointers"
+test = true
+sanitizers = false
+hints = [
+  """
+The swap logic needs byte-level access to elements.
+Cast base to char* and use i * size for offsets:
+  char *a = (char *)base + i * size;
+""",
+  """
+Use memcpy with a temporary buffer (allocated on the stack) for swapping:
+  char tmp[size]; memcpy(tmp, a, size); memcpy(a, b, size); memcpy(b, tmp, size);
+Note: variable-length arrays (VLA) are optional in C11.
+You can use a fixed buffer or malloc instead.
+""",
+]
+
+[[exercises]]
+name = "function_pointers3"
+dir = "08_function_pointers"
+test = true
+sanitizers = false
+hints = [
+  """
+String comparison with == compares POINTERS, not content.
+Two different string literals may have different addresses even
+if they contain the same text.
+""",
+  """
+Use strcmp(ops[i].name, name) == 0 to compare strings by content.
+Remember to #include <string.h>.
+""",
+  """
+When the operation is found, store the result: *result = ops[i].execute(a, b);
+Don't forget to return 0 on success, -1 if the operation isn't found.
+""",
+]
+
+# ── 09: Const Correctness ───────────────────────────────
+
+[[exercises]]
+name = "const1"
+dir = "09_const"
+test = true
+sanitizers = false
+hints = [
+  """
+The functions don't modify their input, but the parameters aren't
+declared const. The test passes const-qualified arguments.
+""",
+  """
+Add const to read-only parameters:
+  size_t string_length(const char *s)
+  int array_max(const int *arr, int len)
+  void print_person(const struct person *p, char *buf, size_t buf_size)
+""",
+]
+
+[[exercises]]
+name = "const2"
+dir = "09_const"
+test = true
+sanitizers = false
+hints = [
+  """
+find_first() only reads the array — its parameter and return type
+should both be const int *. The test passes a const int[].
+""",
+  """
+array_fill() needs to modify *arr but should NOT reassign arr itself.
+Declare it as int *const arr to make the pointer itself const.
+Use index-based access (arr[i]) instead of pointer arithmetic (arr++).
+""",
+]
+
+[[exercises]]
+name = "const3"
+dir = "09_const"
+test = true
+sanitizers = true
+hints = [
+  """
+config_describe() accidentally modifies the struct's fields.
+If the parameter were const struct config *, the compiler would
+catch the accidental writes.
+""",
+  """
+Change config_describe to take const struct config *c.
+Remove the lines that set c->width = 0 and c->height = 0 —
+they won't compile with const, which is the point!
+""",
+  """
+config_create() only copies the first character of the title.
+Use snprintf(c->title, sizeof(c->title), "%s", title) to copy
+the full string safely.
+""",
+]
+
+# ── 10: Error Handling ──────────────────────────────────
+
+[[exercises]]
+name = "error_handling1"
+dir = "10_error_handling"
+test = true
+sanitizers = false
+hints = [
+  """
+What happens when you divide by zero? The C standard says it's
+undefined behavior — the program can crash or do anything.
+""",
+  """
+Check b == 0 before dividing: if (b == 0) return MATH_DIV_ZERO;
+""",
+  """
+There's another edge case: INT_MIN / -1 overflows because
+|INT_MIN| > INT_MAX. Check: if (a == INT_MIN && b == -1) return MATH_OVERFLOW;
+""",
+]
+
+[[exercises]]
+name = "error_handling2"
+dir = "10_error_handling"
+test = true
+sanitizers = true
+hints = [
+  """
+The function doesn't check for NULL input. Dereferencing NULL
+is undefined behavior — add a check at the very beginning.
+""",
+  """
+After finding (or not finding) the comma, check if comma is NULL.
+If no comma was found, return -2.
+""",
+  """
+The helper is_valid_int() is called but its return value is ignored.
+Use it: if (!is_valid_int(input, first_len)) return -3;
+Don't modify *a or *b until validation passes.
+""",
+]
+
+[[exercises]]
+name = "error_handling3"
+dir = "10_error_handling"
+test = true
+sanitizers = true
+hints = [
+  """
+error_set() uses vsprintf() which has no buffer size limit.
+If the formatted message is too long, it overflows the buffer.
+""",
+  """
+Use vsnprintf(err->message, sizeof(err->message), fmt, args)
+to limit the output to the buffer size.
+""",
+  """
+parse_config_line() must validate all inputs:
+  - Check line != NULL
+  - Check '=' exists in line
+  - Check key length fits in key_size
+  - Check value length fits in value_size
+Set a descriptive error message for each failure.
+""",
+]
+
+# ── 11: Bitwise Operations ──────────────────────────────
+
+[[exercises]]
+name = "bitwise1"
+dir = "11_bitwise"
+test = true
+sanitizers = false
+hints = [
+  """
+count_set_bits() only loops 16 times — but unsigned int is 32 bits!
+The loop also shifts n LEFT instead of RIGHT, corrupting the value.
+""",
+  """
+Use while (n) { count += n & 1u; n >>= 1; } to count all set bits.
+This naturally handles any number of bits.
+""",
+  """
+is_power_of_two() returns 1 for n=0, but 0 is NOT a power of two.
+Add a guard: return n != 0 && (n & (n - 1)) == 0;
+""",
+]
+
+[[exercises]]
+name = "bitwise2"
+dir = "11_bitwise"
+test = true
+sanitizers = false
+hints = [
+  """
+pack_rgb(): red should be shifted by 16 bits, green by 8.
+Check that each component is cast to uint32_t before shifting.
+""",
+  """
+unpack_rgb(): red is at bits 16-23, green at 8-15, blue at 0-7.
+Shift right and mask with 0xFF.
+""",
+  """
+extract_bits(): the mask should be (1u << count) - 1, not (1u << count).
+The subtraction turns a single high bit into 'count' consecutive 1-bits.
+""",
+]
+
+[[exercises]]
+name = "bitwise3"
+dir = "11_bitwise"
+test = true
+sanitizers = false
+hints = [
+  """
+next_power_of_two() doubles exact powers of two (8 → 16 instead of 8).
+You need to subtract 1 first: n-- before the bit-smearing.
+""",
+  """
+The bit-smearing pattern fills all bits below the highest set bit:
+  n |= n >> 1; n |= n >> 2; n |= n >> 4; ...
+Then n + 1 gives the next power of two. But only after n--.
+""",
+  """
+highest_set_bit() returns pos + 1 instead of pos.
+Bit positions are 0-indexed: bit 0 is the LSB.
+Just return pos directly.
+""",
+]

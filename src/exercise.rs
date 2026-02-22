@@ -32,8 +32,8 @@ impl Exercise {
         &self.info.name
     }
 
-    pub fn hint(&self) -> &str {
-        &self.info.hint
+    pub fn hints(&self) -> Vec<&str> {
+        self.info.get_hints()
     }
 
     pub fn exists(&self) -> bool {
