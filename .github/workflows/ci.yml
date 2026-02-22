@@ -35,8 +35,7 @@ jobs:
       - name: Verify solutions (gcc)
         shell: bash
         run: |
-          shopt -s globstar
-          for f in solutions/**/*.c; do
+          find solutions -name '*.c' | sort | while read -r f; do
             echo "::group::gcc $f"
             gcc -Wall -Wextra -Werror -pedantic -std=c11 -Iinclude -o /tmp/test_bin "$f" && /tmp/test_bin
             gcc -Wall -Wextra -Werror -pedantic -std=c11 -Iinclude -DTEST -o /tmp/test_bin "$f" && /tmp/test_bin
@@ -46,8 +45,7 @@ jobs:
       - name: Verify solutions (clang)
         shell: bash
         run: |
-          shopt -s globstar
-          for f in solutions/**/*.c; do
+          find solutions -name '*.c' | sort | while read -r f; do
             echo "::group::clang $f"
             clang -Wall -Wextra -Werror -pedantic -std=c11 -Iinclude -o /tmp/test_bin "$f" && /tmp/test_bin
             clang -Wall -Wextra -Werror -pedantic -std=c11 -Iinclude -DTEST -o /tmp/test_bin "$f" && /tmp/test_bin
@@ -57,8 +55,7 @@ jobs:
       - name: Verify solutions with sanitizers
         shell: bash
         run: |
-          shopt -s globstar
-          for f in solutions/**/*.c; do
+          find solutions -name '*.c' | sort | while read -r f; do
             echo "::group::sanitizer $f"
             gcc -fsanitize=address,undefined -fno-sanitize-recover=all -std=c11 -Iinclude -DTEST -g -o /tmp/test_bin "$f" && /tmp/test_bin
             echo "::endgroup::"
