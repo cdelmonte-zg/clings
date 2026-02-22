@@ -7,6 +7,7 @@ use std::process::Command;
 pub struct Exercise {
     pub info: ExerciseInfo,
     pub path: PathBuf,
+    #[allow(dead_code)]
     pub solution_path: PathBuf,
 }
 

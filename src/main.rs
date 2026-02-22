@@ -11,7 +11,7 @@ use clap::{Parser, Subcommand};
 use compiler::{Compiler, CompilerKind};
 use exercise::Exercise;
 use info_file::InfoFile;
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 
 #[derive(Parser)]
 #[command(name = "clings", version, about = "Small exercises to learn advanced C concepts")]
@@ -57,7 +57,7 @@ fn resolve_base_dir() -> Result<PathBuf> {
     )
 }
 
-fn load_exercises(info: &InfoFile, base_dir: &PathBuf) -> Vec<Exercise> {
+fn load_exercises(info: &InfoFile, base_dir: &Path) -> Vec<Exercise> {
     let exercises_dir = base_dir.join("exercises");
     let solutions_dir = base_dir.join("solutions");
     info.exercises

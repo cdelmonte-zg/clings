@@ -129,19 +129,4 @@ impl AppState {
         self.exercises.iter().position(|e| e.name() == name)
     }
 
-    pub fn reset_exercise(&self, name: &str) -> Result<()> {
-        if let Some(idx) = self.find_exercise(name) {
-            let exercise = &self.exercises[idx];
-            if exercise.solution_path.exists() {
-                // We reset by extracting the original - for now just inform the user
-                anyhow::bail!(
-                    "Reset not yet implemented. Please manually restore {} from the original.",
-                    exercise.path.display()
-                );
-            }
-        } else {
-            anyhow::bail!("Exercise '{}' not found", name);
-        }
-        Ok(())
-    }
 }

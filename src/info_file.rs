@@ -10,10 +10,12 @@ fn default_true() -> bool {
 pub struct InfoFile {
     pub format_version: u32,
     #[serde(default)]
+    #[allow(dead_code)]
     pub default_compiler: Option<String>,
     #[serde(default)]
     pub welcome_message: Option<String>,
     #[serde(default)]
+    #[allow(dead_code)]
     pub final_message: Option<String>,
     pub exercises: Vec<ExerciseInfo>,
 }
