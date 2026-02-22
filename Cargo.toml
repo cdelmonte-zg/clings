@@ -1,0 +1,15 @@
+[package]
+name = "clings"
+version = "0.1.0"
+edition = "2021"
+description = "Small exercises to learn advanced C concepts - inspired by rustlings"
+
+[dependencies]
+clap = { version = "4", features = ["derive"] }
+serde = { version = "1", features = ["derive"] }
+toml = "0.8"
+notify = "7"
+notify-debouncer-mini = "0.5"
+crossterm = "0.28"
+anyhow = "1"
+console = "0.15"

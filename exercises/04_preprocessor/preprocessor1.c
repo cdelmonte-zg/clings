@@ -1,0 +1,64 @@
+// preprocessor1.c - Macro stringification and token pasting
+//
+// The C preprocessor has two powerful operators:
+//   # (stringify) - turns a macro argument into a string literal
+//   ## (token paste) - concatenates two tokens into one
+//
+// Fix the macros below to make the tests pass.
+
+#include <stdio.h>
+#include <string.h>
+
+// TODO: Fix this macro. It should turn its argument into a string.
+// Example: STRINGIFY(hello) should produce "hello"
+#define STRINGIFY(x) x
+
+// TODO: Fix this macro. It should concatenate two tokens.
+// Example: CONCAT(foo, bar) should produce the identifier foobar
+#define CONCAT(a, b) a b
+
+// TODO: Fix this macro. It should create a debug print statement.
+// DEBUG_VAR(x) should print: "x = <value of x>"
+// Hint: you need STRINGIFY and printf with %d format.
+#define DEBUG_VAR(var) printf("%s = %d\n", "var", var)
+
+#ifndef TEST
+int main(void) {
+    int my_value = 42;
+    DEBUG_VAR(my_value);
+
+    printf("STRINGIFY test: %s\n", STRINGIFY(hello_world));
+
+    int foobar = 99;
+    printf("CONCAT test: %d\n", CONCAT(foo, bar));
+
+    return 0;
+}
+#else
+#include "clings_test.h"
+
+TEST(test_stringify) {
+    ASSERT_STR_EQ(STRINGIFY(hello), "hello");
+    ASSERT_STR_EQ(STRINGIFY(foo_bar), "foo_bar");
+}
+
+TEST(test_concat) {
+    int foobar = 42;
+    ASSERT_EQ(CONCAT(foo, bar), 42);
+
+    int test123 = 99;
+    ASSERT_EQ(CONCAT(test, 123), 99);
+}
+
+TEST(test_debug_var) {
+    int some_var = 7;
+    DEBUG_VAR(some_var);  // Should print "some_var = 7"
+}
+
+int main(void) {
+    RUN_TEST(test_stringify);
+    RUN_TEST(test_concat);
+    RUN_TEST(test_debug_var);
+    TEST_REPORT();
+}
+#endif
