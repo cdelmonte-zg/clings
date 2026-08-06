@@ -10,13 +10,13 @@ welcome_message = """
 
   Welcome to cmetal!
 
-  This project contains small exercises to help you learn
-  advanced C concepts by fixing broken code and implementing
-  missing functionality.
+  A self-contained learning environment for advanced C:
+  you learn by fixing broken code. Not every corner of the
+  language, but the C that appears in production systems.
 
   How it works:
-  - Your working copies live in my_exercises/ (ignored by git);
-    the originals in exercises/ stay pristine
+  - Your working copies live in my_exercises/; the pristine
+    exercises in exercises/ stay untouched
   - Each exercise has a bug or a TODO for you to fix
   - Edit the .c file in your editor
   - cmetal will automatically recompile and verify your changes

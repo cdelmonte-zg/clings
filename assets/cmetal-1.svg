@@ -1,5 +1,5 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="587" height="616" font-family="SF Mono, DejaVu Sans Mono, Menlo, monospace" font-size="14">
-<rect width="587" height="616" rx="10" fill="#1b1e28"/>
+<svg xmlns="http://www.w3.org/2000/svg" width="590" height="553" font-family="SF Mono, DejaVu Sans Mono, Menlo, monospace" font-size="14">
+<rect width="590" height="553" rx="10" fill="#1b1e28"/>
 <circle cx="22" cy="22" r="6" fill="#f2777a"/>
 <circle cx="42" cy="22" r="6" fill="#ffcc66"/>
 <circle cx="62" cy="22" r="6" fill="#99cc99"/>
@@ -11,13 +11,13 @@
 <text y="161"><tspan x="20.0" fill="#c8c8c8" xml:space="preserve">  </tspan></text>
 <text y="182"><tspan x="20.0" fill="#c8c8c8" xml:space="preserve">    Welcome to cmetal!</tspan></text>
 <text y="203"><tspan x="20.0" fill="#c8c8c8" xml:space="preserve">  </tspan></text>
-<text y="224"><tspan x="20.0" fill="#c8c8c8" xml:space="preserve">    This project contains small exercises to help you learn</tspan></text>
-<text y="245"><tspan x="20.0" fill="#c8c8c8" xml:space="preserve">    advanced C concepts by fixing broken code and implementing</tspan></text>
-<text y="266"><tspan x="20.0" fill="#c8c8c8" xml:space="preserve">    missing functionality.</tspan></text>
+<text y="224"><tspan x="20.0" fill="#c8c8c8" xml:space="preserve">    A self-contained learning environment for advanced C:</tspan></text>
+<text y="245"><tspan x="20.0" fill="#c8c8c8" xml:space="preserve">    you learn by fixing broken code. Not every corner of the</tspan></text>
+<text y="266"><tspan x="20.0" fill="#c8c8c8" xml:space="preserve">    language, but the C that appears in production systems.</tspan></text>
 <text y="287"><tspan x="20.0" fill="#c8c8c8" xml:space="preserve">  </tspan></text>
 <text y="308"><tspan x="20.0" fill="#c8c8c8" xml:space="preserve">    How it works:</tspan></text>
-<text y="329"><tspan x="20.0" fill="#c8c8c8" xml:space="preserve">    - Your working copies live in my_exercises/ (ignored by git);</tspan></text>
-<text y="350"><tspan x="20.0" fill="#c8c8c8" xml:space="preserve">      the originals in exercises/ stay pristine</tspan></text>
+<text y="329"><tspan x="20.0" fill="#c8c8c8" xml:space="preserve">    - Your working copies live in my_exercises/; the pristine</tspan></text>
+<text y="350"><tspan x="20.0" fill="#c8c8c8" xml:space="preserve">      exercises in exercises/ stay untouched</tspan></text>
 <text y="371"><tspan x="20.0" fill="#c8c8c8" xml:space="preserve">    - Each exercise has a bug or a TODO for you to fix</tspan></text>
 <text y="392"><tspan x="20.0" fill="#c8c8c8" xml:space="preserve">    - Edit the .c file in your editor</tspan></text>
 <text y="413"><tspan x="20.0" fill="#c8c8c8" xml:space="preserve">    - cmetal will automatically recompile and verify your changes</tspan></text>
@@ -26,7 +26,5 @@
 <text y="476"><tspan x="20.0" fill="#c8c8c8" xml:space="preserve">  </tspan></text>
 <text y="497"><tspan x="20.0" fill="#c8c8c8" xml:space="preserve">    Commands: [n]ext [p]rev [h]int [l]ist [r]e-run [q]uit</tspan></text>
 <text y="518"></text>
-<text y="539"><tspan x="20.0" fill="#c8c8c8" xml:space="preserve">  cmetal v0.4.0 — compiler: gcc</tspan></text>
-<text y="560"></text>
-<text y="581"><tspan x="20.0" fill="#c8c8c8" xml:space="preserve">  Press any key to start...</tspan></text>
+<text y="539"><tspan x="20.0" fill="#c8c8c8" xml:space="preserve">  cmetal v0.4.1 — compiler: gcc</tspan></text>
 </svg>
