@@ -17,8 +17,9 @@ Inspired by [rustlings](https://github.com/rust-lang/rustlings) --
 fix broken C code, learn by doing.
 
 Each exercise is a `.c` file with a real bug or a `TODO`. Open it, fix
-it, and save: cmetal recompiles, runs the tests and sanitizers, and
-tells you in seconds whether you got it right. 62 exercises across 20 topics,
+it, and save: cmetal recompiles, runs the tests and sanitizers where
+the exercise calls for them, and tells you in seconds whether you got
+it right. 62 exercises across 20 topics,
 from pointer decay and heap discipline through undefined behavior to an
 implementation track -- encodings, tagged unions, hash tables, arenas,
 a mark-sweep GC, NaN boxing, bytecode.
@@ -37,7 +38,7 @@ You need gcc or clang with C11 support. Then:
 
 ```bash
 brew install cdelmonte-zg/tap/cmetal
-# or: cargo install cmetal
+# or, with a Rust toolchain: cargo install cmetal
 
 cmetal init my-cmetal-course
 cd my-cmetal-course
@@ -47,7 +48,8 @@ cmetal
 The binary embeds the curriculum -- no clone needed. Work on the files
 under `my_exercises/`, save, read the result; press `h` for progressive
 hints. When an exercise passes, the official solution is revealed in
-`my_solutions/` so you can compare it with yours.
+`my_solutions/` so you can compare it with yours. cmetal compiles with
+gcc by default; run `cmetal --compiler clang` to use clang instead.
 
 The other install routes (prebuilt binaries, build from source), plus
 upgrade and uninstall, are covered in

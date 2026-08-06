@@ -40,7 +40,7 @@ overflow, use-after-free, dangling pointers — and watch AddressSanitizer and
 UBSan catch it. The sanitizer report *is* the teaching material; the point isn't
 to avoid UB abstractly but to recognise what it looks like when a tool flags it.
 
-The next tier is about writing C other people can trust: **Strings** (the
+The later foundations topics are about writing C other people can trust: **Strings** (the
 functions everyone gets wrong), **Structs** (layout, padding, opaque types),
 **Function Pointers** (callbacks and dispatch), **Const Correctness** (APIs that
 document their own immutability), **Error Handling** (codes that survive a real
@@ -53,9 +53,10 @@ found in interpreters, compilers, and binary formats: bytes on the wire
 mark-sweep **Garbage Collector** with AddressSanitizer as the judge, the
 bit-level value representation of **NaN Boxing**, defensive **Bytecode
 Dispatch**, and a **Capstone** that serializes, validates and reloads a
-binary format end to end. One editorial rule governs the track: every
-exercise must be useful to someone who will never build an interpreter —
-an arena is a lifetime strategy, a varint decoder is any defensive
+binary format end to end. The track follows the project-wide editorial
+rule stated in the [roadmap](../project/roadmap.md): every exercise
+must be useful to someone who will never build an interpreter — an
+arena is a lifetime strategy, a varint decoder is any defensive
 parser — and no exercise requires code from an earlier chapter.
 
 ## The UB Lab

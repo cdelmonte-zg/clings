@@ -1,3 +1,7 @@
+<!-- The repository README deep-links to this page as
+     getting-started/install.html. If this file moves, add an
+     [output.html.redirect] entry in book/book.toml for the old path. -->
+
 # Install
 
 The `cmetal` binary carries the whole course: install it, run `cmetal
@@ -9,7 +13,9 @@ you the binary.
 ## Prerequisites
 
 - **gcc and/or clang** with C11 support — the exercises are compiled with your
-  system toolchain.
+  system toolchain. cmetal uses gcc by default; start it with
+  `--compiler clang` to work with clang instead (see
+  [Choosing a compiler](../guides/choosing-a-compiler.md)).
 - **git and a Rust toolchain** — only to contribute, or to install via
   Cargo / build from source; learning needs neither.
 

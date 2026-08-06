@@ -15,9 +15,10 @@ that actually hurt.
 ## Where we are
 
 Today cmetal ships 62 exercises across 20 topics, in two tiers. The
-foundations tier covers general advanced C: pointers, memory, undefined
-behavior and the UB Lab, strings, structs, function pointers, const,
-error handling, bitwise. The implementation track (topics 12–19)
+foundations tier (topics 00–11) covers general advanced C, from the
+intro and the preprocessor through pointers, memory, undefined behavior
+and the UB Lab, strings, structs, function pointers, const, error
+handling, and bitwise. The implementation track (topics 12–19)
 applies it to the C of language implementations and binary formats:
 encodings, tagged unions, hash tables, arenas, a mark-sweep GC, NaN
 boxing, bytecode dispatch, and a capstone that serializes, validates
@@ -82,8 +83,8 @@ through 19, from endianness to the bytecode capstone, all shipped. The
 near-term work is on the foundations tier it builds on:
 
 - **Proper arcs for the thin topics.** Intro and Preprocessor sit at
-  one exercise each; Structs, Const and Bitwise at three. Each should
-  grow into an arc of 3–5.
+  one exercise each, Pointers at two, and several foundations topics
+  at three. Each should grow into an arc of 3–5.
 - **More UB Lab scenarios** — use-after-free across functions,
   double-free, misaligned access.
 - **"What the sanitizer is telling you"** notes attached to each

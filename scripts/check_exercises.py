@@ -19,12 +19,17 @@ Exercises restricted to specific compilers via `compilers = [...]` in
 info.toml are skipped on other compilers (their "must fail as shipped"
 half doesn't hold there), but their solutions are still verified.
 
+The docs state the curriculum totals by hand ("62 exercises across 20
+topics"); those numbers are also checked against info.toml so a merged
+exercise can't silently stale them.
+
 Usage:
     python3 scripts/check_exercises.py [--compiler gcc|clang]
 """
 
 import argparse
 import os
+import re
 import subprocess
 import sys
 import tempfile
@@ -95,6 +100,37 @@ def solution_source(rel, build_dir):
     return out
 
 
+DOC_COUNT_RE = re.compile(r"(\d+)\s+(exercises|topics)\b")
+
+
+def doc_count_problems(info):
+    """Check every "<N> exercises" / "<N> topics" claim in the docs
+    against the real counts from info.toml."""
+    actual = {
+        "exercises": len(info["exercises"]),
+        "topics": len({ex["dir"] for ex in info["exercises"]}),
+    }
+    docs = [os.path.join(REPO, "README.md"), os.path.join(REPO, "VISION.md")]
+    for root, _, files in os.walk(os.path.join(REPO, "book", "src")):
+        docs += [os.path.join(root, f) for f in files
+                 if f.endswith(".md")
+                 and not os.path.islink(os.path.join(root, f))]
+
+    problems = []
+    for path in docs:
+        with open(path) as f:
+            text = f.read()
+        for m in DOC_COUNT_RE.finditer(text):
+            if int(m.group(1)) != actual[m.group(2)]:
+                rel = os.path.relpath(path, REPO)
+                problems.append(
+                    f'{rel}: says "{m.group(0)}", info.toml has '
+                    f'{actual[m.group(2)]}')
+                print(f"  FAIL docs {rel}: \"{m.group(0)}\" vs "
+                      f"{actual[m.group(2)]} in info.toml")
+    return problems
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("--compiler", default="gcc",
@@ -104,7 +140,7 @@ def main():
     with open(os.path.join(REPO, "info.toml"), "rb") as f:
         info = tomllib.load(f)
 
-    problems = []
+    problems = doc_count_problems(info)
     skipped = 0
     compiler_name = os.path.basename(args.compiler)
     with tempfile.TemporaryDirectory() as build_dir:

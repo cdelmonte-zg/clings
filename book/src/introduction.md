@@ -11,8 +11,9 @@ that survives a real call chain. Books explain these; almost nothing lets you
 parts of C that actually hurt.
 
 Each exercise is a `.c` file with a real bug or a `TODO`. You open it, fix it,
-and save. cmetal recompiles, runs the binary, runs the tests, runs the
-sanitizers, and tells you — in seconds — whether you got it right.
+and save. cmetal recompiles, runs the binary — and the tests and sanitizers
+where the exercise calls for them — and tells you, in seconds, whether you got
+it right.
 
 ```text
   Exercise: 02_memory/memory2
@@ -29,8 +30,9 @@ unlocks in `my_solutions/` so you can compare it with yours.
 
 ## The loop
 
-1. Run `cmetal` in the repo. Your working copies live in `my_exercises/`
-   (gitignored); the originals in `exercises/` stay pristine.
+1. Run `cmetal init`, then `cmetal` from the workspace it creates (a git
+   clone of the repository works the same way). Your working copies live
+   in `my_exercises/`; the originals in `exercises/` stay pristine.
 2. Open the exercise's `.c` file in your editor. Fix the bug.
 3. Save. cmetal recompiles and re-verifies automatically — [watch
    mode](guides/watch-mode.md) is the core experience.
