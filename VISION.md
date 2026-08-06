@@ -14,13 +14,24 @@ that actually hurt.
 
 ## Where we are
 
-Today cmetal ships 62 exercises across 20 topics (pointers, memory, UB,
-strings, structs, function pointers, const, error handling, bitwise), a
-watch-mode TUI with progressive hints, sanitizer-backed verification,
-solutions that unlock only after you solve the exercise, and a
-self-contained distribution: the binary embeds the curriculum, `cmetal
-init` materializes a private workspace with no git clone, and `cmetal
-update` delivers new exercises without ever overwriting your work.
+Today cmetal ships 62 exercises across 20 topics, in two tiers. The
+foundations tier covers general advanced C: pointers, memory, undefined
+behavior and the UB Lab, strings, structs, function pointers, const,
+error handling, bitwise. The implementation track (topics 12–19)
+applies it to the C of language implementations and binary formats:
+encodings, tagged unions, hash tables, arenas, a mark-sweep GC, NaN
+boxing, bytecode dispatch, and a capstone that serializes, validates
+and reloads a bytecode chunk — magic, version, constant pool, code
+stream.
+
+Around the exercises: a watch-mode TUI with progressive hints,
+sanitizer-backed verification, solutions that unlock only after you
+solve the exercise, and a self-contained distribution. The binary
+embeds the curriculum, `cmetal init` materializes a private workspace
+with no git clone, `cmetal update` delivers new exercises without ever
+overwriting your work, and a single version tag publishes every install
+route: Homebrew, prebuilt tarballs, and crates.io
+(`cargo install cmetal`).
 
 ## Design principles
 
@@ -45,7 +56,7 @@ These are the non-negotiables that every future change must respect:
 
 ### The direction — the C of language implementations
 
-cmetal is developing a focused implementation track around the C used
+cmetal grows along a focused implementation track around the C used
 in interpreters, compilers, and binary formats. That domain covers much
 of hard C — tagged unions, hash tables, arenas, garbage collectors,
 bytecode — in pure C11, entirely in userspace, where sanitizers give
@@ -64,29 +75,19 @@ lifetime strategy; a GC is a graph traversal over owned memory.
 Exercises stand alone — they never require the artifacts of previous
 chapters.
 
-### Near term — the implementation track
+### Near term — deepen the foundations
 
-- **Bytes on the wire** ✓ — endianness, defensive varints, bit packing
-  (topic 12).
-- **Tagged unions and value representation** ✓ — tag discipline,
-  exhaustive dispatch, ownership across variants, and the header-first
-  struct idiom (topic 13).
-- **Hash tables from scratch** ✓ — FNV-1a, open addressing,
-  tombstones, rehash on growth, string interning (topic 14).
-- **Arena allocators** ✓ — bump allocation and alignment, chained
-  growth, escape discipline at the lifetime boundary (topic 15).
-- **A mark-sweep GC on a toy heap** ✓ — with AddressSanitizer as the
-  judge, because a GC bug *is* a use-after-free.
-- **NaN boxing** ✓ and **bytecode dispatch** ✓ (the portable switch,
-  and computed goto — a GNU C extension both gcc and clang accept,
-  enabled via per-exercise flags).
-- **Capstone:** ✓ serialize, validate and reload a bytecode chunk —
-  magic, version, constant pool, code stream.
+The first pass of the implementation track is complete — topics 12
+through 19, from endianness to the bytecode capstone, all shipped. The
+near-term work is on the foundations tier it builds on:
 
-Alongside the track, the foundations keep deepening: proper arcs for
-the thin topics, more UB Lab scenarios (use-after-free across
-functions, double-free, misaligned access), and "what the sanitizer is
-telling you" notes attached to each exercise's hints.
+- **Proper arcs for the thin topics.** Intro and Preprocessor sit at
+  one exercise each; Structs, Const and Bitwise at three. Each should
+  grow into an arc of 3–5.
+- **More UB Lab scenarios** — use-after-free across functions,
+  double-free, misaligned access.
+- **"What the sanitizer is telling you"** notes attached to each
+  exercise's hints.
 
 ### Mid term — the missing chapters of advanced C
 
@@ -104,12 +105,6 @@ telling you" notes attached to each exercise's hints.
 
 - **C23 track** as compiler support matures (`nullptr`, `constexpr`,
   checked arithmetic).
-- **Packaged distribution** ✓ — `cmetal` is one install command away
-  on every supported route: Homebrew, prebuilt tarballs, and crates.io
-  (`cargo install cmetal`), all published from a single version tag.
-  The name is settled: the rename from clings resolved the old
-  collision, and the `cmetal` crate name is registered to this
-  project.
 - **Community exercise pipeline:** contributing a new exercise should be
   a 30-minute task with the invariant checker as the only gatekeeper.
 - **Localized hints** — the code stays English, the teaching can speak

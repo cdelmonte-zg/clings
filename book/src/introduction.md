@@ -40,8 +40,9 @@ unlocks in `my_solutions/` so you can compare it with yours.
 ## What it is for
 
 - **Deliberate practice on hard C.** 62 exercises across 20 topics, from
-  pointer decay to bit-packing, each built around a bug you will actually meet
-  in production code. See [the curriculum](reference/curriculum.md).
+  pointer decay to hash tables, garbage collection and bytecode, each built
+  around a bug you will actually meet in production code. See
+  [the curriculum](reference/curriculum.md).
 - **Real toolchains, not a sandbox.** gcc and clang, AddressSanitizer and
   UBSan — the tools you use at work. [Choosing a
   compiler](guides/choosing-a-compiler.md).
