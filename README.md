@@ -10,11 +10,12 @@
  \___|_| |_| |_|\___|\__\__,_|_|
 ```
 
-**Small exercises to learn advanced C concepts.** (formerly known as
-*clings*)
+**A self-contained learning environment for advanced C.** (formerly
+known as *clings*)
 
-Inspired by [rustlings](https://github.com/rust-lang/rustlings) --
-fix broken C code, learn by doing.
+Inspired by [rustlings](https://github.com/rust-lang/rustlings): fix
+broken C code, learn by doing. The goal is not to teach every corner
+of C, but the C that appears in production systems.
 
 Each exercise is a `.c` file with a real bug or a `TODO`. Open it, fix
 it, and save: cmetal recompiles, runs the tests and sanitizers where

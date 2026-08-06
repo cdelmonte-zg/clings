@@ -1,6 +1,6 @@
 [book]
 title = "cmetal"
-description = "Small exercises to learn advanced C concepts, inspired by rustlings."
+description = "A self-contained learning environment for advanced C, inspired by rustlings."
 authors = ["Christian Del Monte"]
 language = "en"
 
