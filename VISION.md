@@ -56,7 +56,7 @@ These are the non-negotiables that every future change must respect:
 
 ### The direction — the C of language implementations
 
-cmetal grows along a focused implementation track around the C used
+cmetal includes a focused implementation track around the C used
 in interpreters, compilers, and binary formats. That domain covers much
 of hard C — tagged unions, hash tables, arenas, garbage collectors,
 bytecode — in pure C11, entirely in userspace, where sanitizers give

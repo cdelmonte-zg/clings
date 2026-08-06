@@ -17,15 +17,15 @@ Inspired by [rustlings](https://github.com/rust-lang/rustlings) --
 fix broken C code, learn by doing.
 
 Each exercise is a `.c` file with a real bug or a `TODO`. Open it, fix
-it, save: cmetal recompiles, runs the tests and sanitizers, and tells
-you in seconds whether you got it right. 62 exercises across 20 topics,
+it, and save: cmetal recompiles, runs the tests and sanitizers, and
+tells you in seconds whether you got it right. 62 exercises across 20 topics,
 from pointer decay and heap discipline through undefined behavior to an
 implementation track -- encodings, tagged unions, hash tables, arenas,
 a mark-sweep GC, NaN boxing, bytecode.
 
-The CLI is written in Rust; the exercises are pure C11. Linux and
-macOS -- on Windows, use WSL: native toolchains lack the sanitizers
-the exercises rely on.
+The CLI is written in Rust; the exercises are pure C11. cmetal
+supports Linux and macOS. On Windows, use WSL: native toolchains lack
+the sanitizers the exercises rely on.
 
 📖 **[Documentation](https://cdelmonte-zg.github.io/cmetal/)** -- install
 options, the watch-mode loop, the full curriculum, and how verification
@@ -36,7 +36,9 @@ works.
 You need gcc or clang with C11 support. Then:
 
 ```bash
-brew install cdelmonte-zg/tap/cmetal   # or: cargo install cmetal
+brew install cdelmonte-zg/tap/cmetal
+# or: cargo install cmetal
+
 cmetal init my-cmetal-course
 cd my-cmetal-course
 cmetal
