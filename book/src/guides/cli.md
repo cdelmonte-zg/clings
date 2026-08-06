@@ -4,6 +4,9 @@ Running `cmetal` with no arguments starts [watch mode](watch-mode.md). The
 subcommands below do one thing and exit — handy for scripting, for jumping to a
 specific exercise, or for checking progress without entering the loop.
 
+Wherever a subcommand takes `<name>`, it can be omitted to mean the
+current exercise — `run`, `hint`, `solution` and `diff` all accept it.
+
 ## `cmetal init [dir]`
 
 Create a self-contained workspace from the curriculum embedded in the
@@ -99,7 +102,9 @@ cmetal update
 With a name: restore that one exercise's working copy to the pristine
 version and mark it pending again — other progress is kept. Without:
 clear ALL progress and restore every pristine exercise into
-`my_exercises/`. Nothing outside the cmetal workspace is touched.
+`my_exercises/`. Either way, reset asks for confirmation before
+discarding work you have edited (`--force` skips the prompt). Nothing
+outside the cmetal workspace is touched.
 
 ```bash
 cmetal reset pointers1   # redo one exercise
