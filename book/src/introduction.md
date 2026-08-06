@@ -11,8 +11,9 @@ that survives a real call chain. Books explain these; almost nothing lets you
 parts of C that actually hurt.
 
 Each exercise is a `.c` file with a real bug or a `TODO`. You open it, fix it,
-and save. cmetal recompiles, runs the binary, runs the tests, runs the
-sanitizers, and tells you — in seconds — whether you got it right.
+and save. cmetal recompiles, runs the binary — and the tests and sanitizers
+where the exercise calls for them — and tells you, in seconds, whether you got
+it right.
 
 ```text
   Exercise: 02_memory/memory2
@@ -29,8 +30,9 @@ unlocks in `my_solutions/` so you can compare it with yours.
 
 ## The loop
 
-1. Run `cmetal` in the repo. Your working copies live in `my_exercises/`
-   (gitignored); the originals in `exercises/` stay pristine.
+1. Run `cmetal init`, then `cmetal` from the workspace it creates (a git
+   clone of the repository works the same way). Your working copies live
+   in `my_exercises/`; the originals in `exercises/` stay pristine.
 2. Open the exercise's `.c` file in your editor. Fix the bug.
 3. Save. cmetal recompiles and re-verifies automatically — [watch
    mode](guides/watch-mode.md) is the core experience.
@@ -40,8 +42,9 @@ unlocks in `my_solutions/` so you can compare it with yours.
 ## What it is for
 
 - **Deliberate practice on hard C.** 62 exercises across 20 topics, from
-  pointer decay to bit-packing, each built around a bug you will actually meet
-  in production code. See [the curriculum](reference/curriculum.md).
+  pointer decay to hash tables, garbage collection and bytecode, each built
+  around a bug you will actually meet in production code. See
+  [the curriculum](reference/curriculum.md).
 - **Real toolchains, not a sandbox.** gcc and clang, AddressSanitizer and
   UBSan — the tools you use at work. [Choosing a
   compiler](guides/choosing-a-compiler.md).
