@@ -22,7 +22,7 @@ use std::path::PathBuf;
 #[command(
     name = "cmetal",
     version,
-    about = "Small exercises to learn advanced C concepts"
+    about = "A self-contained learning environment for advanced C"
 )]
 struct Cli {
     #[command(subcommand)]

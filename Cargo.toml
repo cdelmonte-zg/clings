@@ -2,7 +2,7 @@
 name = "cmetal"
 version = "0.4.1"
 edition = "2021"
-description = "Small exercises to learn advanced C concepts - inspired by rustlings"
+description = "A self-contained learning environment for advanced C, inspired by rustlings"
 license = "MIT"
 repository = "https://github.com/cdelmonte-zg/cmetal"
 homepage = "https://cdelmonte-zg.github.io/cmetal/"

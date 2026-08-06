@@ -1,6 +1,7 @@
 # cmetal
 
-**Small exercises to learn advanced C concepts — by fixing broken code.**
+**A self-contained learning environment for advanced C, taught by fixing
+broken code.**
 
 C is taught everywhere, but almost always up to the point where a program
 *compiles*. The hard part of the language starts after that: undefined
@@ -54,9 +55,10 @@ unlocks in `my_solutions/` so you can compare it with yours.
 
 ## What it is not
 
-cmetal is not a C course from zero, not a C++ tutor, and not an IDE or build
-system. It assumes you know C syntax and want to get good at the parts that
-bite. It is a sharp tool for one job: deliberate practice on advanced C. Where
+The goal is not to teach every corner of C, but the C that appears in
+production systems. cmetal is not a C course from zero, not a C++ tutor, and
+not an IDE or build system. It assumes you know C syntax and want to get good
+at the parts that bite. It is a sharp tool for one job: deliberate practice on advanced C. Where
 that line moves next is tracked in the [roadmap](project/roadmap.md).
 
 The CLI is written in Rust for a fast experience on Linux and macOS; the
